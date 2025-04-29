@@ -1,0 +1,139 @@
+---
+title: "assignment3"
+author: "Trae Smith"
+date: "2024-03-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+##Question 1
+
+PRN<-function(n,m,a,c,x=0){
+sample<-numeric(n)
+sample[1]<-x
+
+for(i in 2:n){
+sample[i]=(a*sample[i-1]+c)%%m
+}
+return(sample)
+}
+
+##Test of Q1
+m<-8
+a<-5
+c<-1
+n<-10
+results<-PRN(n,m,a,c)
+print(results)
+
+
+
+##Question 2
+#part a
+n<-1000 #Example
+sam<-runif(n)
+pairs <- data.frame(X1 = sam[-n], X2 = sam[-1])
+plot(pairs$X1, pairs$X2)
+
+
+#part b
+n<-1000
+m<-81
+a<-1
+c<-8
+x<-0
+ple<-PRN(n,m,a,c,x)
+bpairs<- data.frame(X1 = ple[-n], X2 = ple[-1])
+plot(bpairs$X1,bpairs$X2)
+
+
+#part c
+m<-1024
+a<-401
+c<-101
+ple<-PRN(n,m,a,c,x)
+cpairs<- data.frame(X1 = ple[-n], X2 = ple[-1])
+plot(cpairs$X1,cpairs$X2)
+
+m<-2^32
+a<-1664525
+c<-1013904223
+ple<-PRN(n,m,a,c,x)
+dpairs<- data.frame(X1 = ple[-n], X2 = ple[-1])
+plot(dpairs$X1,dpairs$X2)
+
+
+##Question 3
+
+#part a
+probabilities<-c(0.1,0.15,0.15,0.2,0.1,0.1,0.1,0.1)
+prob_directions<-matrix(c(0,1,0,-1,1,0,-1,0,1,1,1,-1, -1,-1,-1,1),ncol=2,byrow = TRUE)
+
+#part b
+
+simulate_steps<-function(probs=probabilities){
+  prob_directions<-matrix(c(0,1,0,-1,1,0,-1,0,1,1,1,-1, -1,-1,-1,1),ncol=2,byrow = TRUE)
+  direction<-sample.int(n=nrow(prob_directions),size=1,prob=probs)
+  return(prob_directions[direction,])
+}
+
+#part c
+positions<-matrix(0, nrow=1001, ncol=2)
+positions[1,]<-c(0,0)
+
+for (i in 2:1001){
+  new_step<-simulate_steps()
+  positions[i,]<-positions[i-1,]+new_step
+  
+}
+
+
+#part d
+plot(positions, type = "l", col = "black", xlab = "West to East", ylab = "South to North", main = "Drunkard's Path")
+
+# Mark the starting point in red and the ending point in blue
+points(positions[1, 1], positions[1, 2], col = "red", pch = 19)
+points(positions[nrow(positions), 1], positions[nrow(positions), 2], col = "blue", pch = 19)
+
+
+
+
+##Question 4
+
+n=1000000
+X<-rexp(n, rate=1)
+Y<-rnorm(n,mean=0,sd=sqrt(X))
+X_giv_Y <- X[floor(Y)==4]
+conditional_expectation <- mean(X_giv_Y)
+conditional_variance <- var(X_giv_Y)
+
+
+##Question 5
+
+possibilities<-matrix(c(0.6, 0.5,
+                        0.4,0.5), nrow=2, byrow = TRUE)
+
+x0<-c(0.5,0.5) #Assuming the stock starts with an equal chance of it going up or down, as well as the starting price is 10 dollars
+price<-10
+
+chances <- function(days) {
+  movement <- numeric(days + 1)
+  movement[1] <- sample(1:2, 1, prob = x0)
+  for (i in 1:days) {
+    movement[i + 1] <- sample(1:2, 1, prob = possibilities[movement[i], ])
+  }
+  return(movement)
+}
+
+
+table<-chances(50) #started with an example to 50, similar to lecture
+ifelse(table==1, "up", "down") #to show if it goes up or down
+
+
+
+
+```

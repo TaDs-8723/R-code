@@ -1,0 +1,128 @@
+---
+title: "STAT1500_Assignment1_101211905"
+author: "Trae Smith"
+date: "2024-02-23"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+#STAT1500_Assignment1_TraeSmith_101211905
+
+#Question 1A
+vector1 <- c("5", "12", "7", "42")
+max(vector1)
+
+sort(vector1)
+
+sum(vector1)
+
+
+#Question 1B
+vector2 <- c("5",9,12)
+vector2[2] + vector2[3]
+
+dataframe3 <- data.frame(v1="5",v2=10,v3=12)
+dataframe3[1,2] + dataframe3[1,3]
+
+list5 <- list(v1="6", v2=42, v3="49", v4=126, v5 = "25")
+list5[[3]]+list5[[4]]
+
+list5[3]+list5[4]
+
+#Question 2
+#error code for 2a
+mtcars[mtcars$cyl = 4, ]
+
+#fixed code for 2a
+mtcars[mtcars$cyl ==4, ] #should be ==, not just one =
+
+#error code for 2b
+matcars[-1:3, ]
+
+#fixed code for 2b
+mtcars[-c(1:3),] #not sure if you wanted -1, or if it is typing error, so i did 2 possibilities
+
+#or 
+mtcars[1:3,]
+
+
+#error code for 2c
+mtcars[mtcars$cyl <= 5]
+
+#fixed code for 2c
+mtcars[mtcars$cyl <= 5,] #forgot the comma
+
+#error code for 2d
+mtcars[mtcars$cyl == 4 | 8, ]
+
+#fixed code for 2d
+mtcars[mtcars$cyl == 4 |mtcars$cyl == 8, ] #you have to mention both conditions separately
+
+#Question 3
+x<-rnorm(30)
+#3a
+subset(x,x<1)
+
+#3b (not sure if you mean, -12 and 1 or -1 and 1, so i did both just in case)
+subset(x,x<1 &x>-12)
+
+subset(x,x<1 & x>-1)
+
+#3c
+subset(x,abs(x)>1.5)
+
+#Question 4
+fair_die<-c(1,2,3,4,5,6)
+sample(fair_die,1,replace=TRUE) #with replacement
+sample(fair_die,1,replace=FALSE) #without replacement
+
+sample(fair_die,6,replace=TRUE) #with replacement, rolled 6 times
+sample(fair_die,6,replace=FALSE) #without replacement, rolled 6 times 
+
+
+#Question 5
+#5a
+?seq() #just to call seq() in help
+x<-(1:5000)*2 #this to show that its equal
+x
+y<-2*seq(from=1, to=5000, by=1) #this is the equivalent using seq() function
+y
+
+#5b
+rep(1:10, times=5) #this will print it 1 to 10 then repeat 
+rep(1:10, each=5) #this will print and repeat 1 first, then 2, up to 10
+
+#Question 6
+
+#6a
+data(trees)
+trees<-force(trees) #note:apparently i have to force it to ensure it works, so ill add it in just to be sure 
+str(trees) #all 3 variables are of the type num
+mean_trees<-apply(trees,2, mean)
+mean_trees
+mean_vol<-mean_trees[3]
+ngtmv<-sum(trees[3]>mean_vol) #stands for number greater than mean volume, finds the number of true cases, which is the amount of volumes greater than the mean
+ngtmv
+
+#6b
+radius_tree<-trees$Girth/2
+radius_tree
+cross_tree<-pi*radius_tree*radius_tree
+cross_tree
+area_summary<-summary(cross_tree)
+q1<-area_summary["1st Qu."]
+q3<-area_summary["3rd Qu."]
+q3-q1 #This is the IQR
+
+#6c
+hist(cross_tree, main="amount of trees per area",xlab="area", ylab="occurence")
+
+#6d
+trees$Area<-cross_tree
+maximum_tree<-which.max(trees$Area)
+trees[maximum_tree,c("Girth","Height","Volume")]
+
+

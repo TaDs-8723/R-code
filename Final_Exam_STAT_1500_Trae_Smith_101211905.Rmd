@@ -1,0 +1,336 @@
+---
+title: "Final Exam STAT 1500 Winter 2024"
+author: "Trae Smith"
+date: "2024-04-15"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+
+# STAT 1500
+
+### Final Exam
+##### Solutions
+
+
+### **Question 1**
+
+# A previous consultant had created a chart for a movie review website which is illustrated below. However, the R code used to create the diagram has since been lost and cannot be recovered. Your task is to come up with the code that will re-create the same chart making it look as close as possible to the original. A new dataset has been supplied – MovieReviewData.csv.
+
+# ![](Picture1.jpg)
+
+#### __SOLUTION__
+data<-read.csv("MovieReviewData.csv")
+
+colnames(data)<-c("Day", "Director", "Genre", "Title", "Release", "Studio", 
+                  "Gross adjusted","Budget", "Gross", "IMDb", "MovieLens", 
+                  "Overseas", "Over percent", "Profit", "Pro percent", "Runtime"
+                  ,"US","GrossUS")
+
+ggplot(data=data, aes(x=Genre, y=GrossUS, color=Studio, size=Budget))+
+geom_point()+
+geom_boxplot(color="black",alpha=0.5)+
+  ylab("Gross % US")+xlab("Genre")+ggtitle("Domestic Gross % by Genre")+
+theme(axis.title.x=element_text(color="blue",size=10),
+      axis.title.y = element_text(color="blue",size=10))
+
+
+### **Question 2**
+
+##One very early method for pseudo random number generation is von Neumann’s middle square method (von Neumann, 1951). The method works as follows: starting with $X_0∈{0,1,…,99}$, define $X_n$ for $n\in N$ to be the middle two digits of the four-digit number $X_{n-1}^2$. If $X_{n-1}^2$ does not have four digits, it is padded with leading zeros.
+
+##(a) Write a function which computes $X_n$ from $X_{n-1}$. 
+##(b) The output of the middle square method has loops. For example, once we have $X_N=0$, we will have $X_n=0$ for all $n \geq N$. Write a program to find all cycles of the middle square method.
+##(c) Comment on the quality of the middle square method as a PRNG.  
+
+
+#### __SOLUTION__
+
+
+
+
+### **Question 3**
+
+#Its 9am on a Friday when your boss, Todd, comes into the office demanding that you have two reports on his desk by end of day. His demands today are particularly frustrating to you as you scheduled months ago a meet up with your friends that’s taking place at 6pm. Now, for better or worse, you want to keep your job, but you also don’t want to miss out on the event that is in just 9 hours. You ask yourself what is the chance that you could even finish two reports in time for the party and how could you actually even go about computing that chance?
+
+#Using a Monte Carlo simulation, what is the probability that you will not make it to the party? Perform at least 10000 simulations. You may assume that report 1 takes between 1 to 5 hours to complete and report 2 takes between 2 to 6 hours to complete and your performance on one report has no bearing on the other. 
+
+#### __SOLUTION__
+trials<-10000
+
+report1<-runif(trials,min=1, max=5)
+report2<-runif(trials, min=2, max=6)
+
+total_time<-report1+report2
+not_making_it<-sum(total_time>9)
+probability<-not_making_it/trials
+
+probability #based on the probability, I would have about 12.46% chance of not making it (more or less, as it could chance due to it being a simulation)
+
+
+
+
+### **Question 4**
+
+#Using the bisection method, show that $f(x)=x^3-sin^2(x)$
+
+#(a) Has a root between [0.5,1]
+#(b) Determine an approximation to the root that is accurate to at least within $10^{-4}$.
+#(c) Determine the maximum number of iterations necessary to solve f(x)=0 with $10^{-4}$. How does this compare with (b). 
+
+
+
+
+#### __SOLUTION__
+#part a and b
+bisect<-function(f,a,b,iterations=1000, tolerate=1e-4) { 
+if (f(a)*f(b)>=0){
+  stop("It does not have a root between the 2 intervals given")
+}
+  else{
+    print("It has a root between the 2 intervals given")
+    
+  }
+  iter <- 0
+  repeat{
+    c <- (a + b) / 2
+    print(f(c))
+    if (f(c) == 0) {
+      return(c) 
+    } 
+    else if (f(a) * f(c) < 0) {
+      b <- c
+    } 
+    else {
+      a <- c
+    }
+    if(abs(f(c)) < tolerate){
+      return(f(c))
+    }
+    else if(iter > iterations){
+      break
+    }
+    iter <- iter + 1
+  }
+  
+  
+  
+}
+f<-function(x) x^3-(sin(x))^2
+a<-0.5
+b<-1
+root_no_root<-bisect(f,a,b)
+
+
+
+### **Question 5**
+
+##Peter is a strange guy. For dinner, he will only eat pizza or sushi. If he has pizza one night, there is a 30% probability that he will have pizza again the next night. But, if he has sushi, there is a 60% probability that he will have sushi the next night.
+
+##(a) If Peter has pizza for dinner on Monday night, what is the probability that he will have sushi on Thursday? (b) In the long run, what percentage of his dinners will be sushi?
+##(c) Use a Monte Carlo simulation to numerically determine the distribution on day 5. 
+##(d) Analytically compute the distribution of day 5. 
+
+
+
+#### __SOLUTION__
+
+
+#part a
+
+
+day2<-c(0.3,0.7) #chance that it'll be on pizza vs sushi on Tuesday
+day3<-0.3*c(0.3,0.7) + 0.7*c(0.4,0.6) #chance that it'll be on pizza vs sushi on Wednesday
+final_day<-0.3*0.3*c(0.3,0.7)+
+  0.3*0.7*c(0.4,0.6)+
+  0.7*0.3*c(0.3,0.7)+
+  0.7*0.7*c(0.4,0.6) #chance that it'll be on pizza vs sushi on Thursday
+
+final_day[2] #63%
+
+
+
+
+
+
+### **Question 6**
+
+#The Spooky Boogie Costume Salon makes and sells four different Halloween costumes: the witch, the ghost, the goblin, and the werewolf. Each witch costume uses 3 yards of material and takes 3 hours to sew. Each ghost costume uses 2 yards of material and takes 1 hour to sew. Each goblin costume uses 2 yards of material and takes 3 hours to sew. Each werewolf costume uses 2 yards of material and takes 4 hours to sew. The profits for each costume are as follows: $10 for the witch, $8 for the ghost, $12 for the goblin, and $16 for the werewolf.
+
+#If they have 600 yards of material and 510 sewing hours available before the holiday, how many of each costume should they make to maximize profit, assuming they sell everything they make? 
+
+
+
+#### __SOLUTION__
+  #Let the witch, the ghost, the goblin, and the werewolf be a, b, c, and d respectively
+
+obj<-c(10,8,12,16)
+mat<-matrix(c(3,2,2,2,
+              3,1,3,4), nrow=2, byrow=TRUE)
+
+rhs<-c(600, 510)
+dir<-c("<=","<=")
+
+solution<-lp("max",obj,mat,dir,rhs)
+solution$solution
+solution$objval
+
+
+### **Question 7**
+
+#A chemist wishes to test the effect of four chemical agents on the strength of a particular type of cloth. Because there might be variability from one bolt to another, the chemist decides to use a randomized block design, with the bolts of cloth considered as blocks. She selects five bolts and applies all four chemicals in random order to each bolt. The resulting tensile strengths follows: 
+
+##|Chemical|Bolt 1|Bolt 2|Bolt 3|Bolt 4|Bolt 5|
+##|:----:|:---------:|:---------:|:---------:|:---------:|:---------:|
+##|1|73|68|74|71|67|
+##|2|73|67|75|72|70|
+##|3|75|68|78|73|68|
+##|4|73|71|75|75|69|   
+
+#(a) Define the response variable, treatment factor, block factor.  
+#(b) Give the ANOVA Table. 
+#(c) Is there sufficient evidence at α=0.05 to indicate that there is a difference in the mean safety scores of the resorts. Use a critical value approach, and make sure to define each mean in your hypotheses.
+#(d) Is there sufficient evidence at α=0.05 to indicate that there is a difference in the mean safety scores assigned by the different travellers? Use a critical value approach, and make sure to define each mean in your hypotheses.
+#(e) Compute a 95% simultaneous Tukey confidence interval to discuss the nature of any differences in the mean safety scores of the different resorts. 
+
+
+
+#### __SOLUTION__
+
+#part a
+#The blocking factor are the 5 bolts, the treatment factor are the chemical agents, and the response variable is the strength of the cloth
+
+strength<-c(73,68,74,71,67,
+           73,67,75,72,70,
+           75,68,78,73,68,
+           73,71,75,75,69)
+
+bolts<-c("1","2","3","4","5","1","2","3","4","5",
+         "1","2","3","4","5","1","2","3","4","5")
+
+agents<-c("1","1","1","1","1","2","2","2","2","2",
+          "3","3","3","3","3","4","4","4","4","4")
+
+
+data_input<-data.frame(bolts=factor(bolts),agents=factor(agents), strength)
+#part b
+modelB<-aov(strength~bolts+agents, data=data_input) #for both
+summary(modelB)
+#part c
+modelAgents<-aov(strength~agents, data=data_input) #for Chemical Agents
+summary(modelAgents)
+#Ho: mu1=mu2=mu3=mu4, Ha: at least one mu is different
+qf(0.05,3,16,lower.tail = FALSE)
+
+
+#Since 0.386<3.238872, we fail to reject Ho, which means that we fail to reject Ho, and as such, we cannot say that at least one of the mean tensile strength of chemical agents 1,2,3, and 4 are different
+
+#part d
+modelBolts<-aov(strength~bolts, data=data_input) #for Bolts
+summary(modelBolts)
+
+#Ho: mu1=mu2=mu3=mu4=mu5, Ha: at least one mu is different
+qf(0.05,4,15,lower.tail=FALSE)
+#Since 16.94>3.055568, we can reject Ho and say that at least one of the mean tensile strength of the cloth is different for bolts 1,2,3,4,and 5
+
+
+#part e
+TukeyHSD(modelB,"bolts")
+#looking at the data, we can say that bolts 3 and 4 are the strongest as they're better than bolts 1,2, and 5
+
+
+### **Question 8**
+
+#A yield of a chemical process is being studied. The two most important variables are thought to be pressure and temperature. Three levels of each factor are selected, and a factorial experiment with two replicates is performed. The yield data are as follows    
+
+##| Temperature |	Pressure 200 |	Pressure 215 | Pressure 230 |	
+##|:-----------:|:-----------:|:----------------:|:----------------:|
+##|150|	90.4|	90.7|	90.2|
+##| |	90.2|	90.6|	90.4|
+##|160|	90.1|	90.5|	89.9|
+##| |	90.3|	90.6|	90.1|
+##|170|	90.5|	90.8|	90.4|
+##|	| 90.7|	90.9|	90.1|
+ 
+
+#(a) Define the treatments
+#(b) Perform a graphical analysis to check for interaction between the temperature and pressure.
+#(c) Test for interaction with $\alpha=0.05$. State your hypotheses.
+#(d) Test the significance of temperature effects with α=0.05. State your hypotheses. 
+#(e) Test the significance of pressure effects with α=0.05. State your hypotheses. 
+#(f) Make a pairwise comparison using Tukey simultaneous 95% confidence interval. 
+#(g) Which temperature and pressure maximizes yied? Does your answers depend on each other? Why? 
+
+
+#### __SOLUTION__
+  
+  #part a 
+#The factor are the temperature and pressure. The treaments are 150,200; 150,215;
+#150,230; 160,200;160,215;160,230;170,200;170,215;and 170,230
+
+yield<-c(90.4,90.7,90.2,90.2,90.6,90.4,90.1,90.5,89.9,90.3,90.6,90.1,90.5,90.8,
+         90.4,90.7,90.9,90.1)
+
+pressure<-c("200","215","230","200","215","230","200","215","230",
+            "200","215","230","200","215","230","200","215","230")
+
+temperature<-c("150","150","150","150","150","150","160","160","160","160",
+               "160","160","170","170","170","170","170","170")
+
+data_input2<-data.frame(temperature=factor(temperature), pressure=factor(pressure), yield)
+
+#part b
+ggplot(data=data_input2,aes(x=temperature,y=yield,col=pressure, group=pressure))+
+  stat_summary(fun=mean,geom="line")
+
+
+#part c
+model2I<-aov(yield~pressure*temperature, data=data_input2)
+summary(model2I)
+#Ho:pij=pi*pj (that is, pressure (pi) and temperature (pj) are independent)
+#Ha:pij!=pi*pj (that is, pressure and tempreature are dependent)
+
+#Since 0.470006>0.05, we fail to reject Ho, which means that we cannot say that pressure and temperature are dependent
+
+#part d
+model2T<-aov(yield~temperature, data=data_input2)
+summary(model2T)
+#Ho: mu1=mu2=mu3
+#Ha: At least one of the means are different
+
+#Since 0.138>0.05, we fail to reject Ho, which means that we cannot say that one of the3 means of temperature are different
+
+#part e
+
+#Ho: mu1=mu2=mu3
+#Ha: At least one of the means are different
+
+model2P<-aov(yield~pressure, data=data_input2)
+summary(model2P)
+
+#Since 0.00121<0.05, we have enough evidence to reject Ho, accept Ha, and say that at least one of the 3 means of pressure are different
+
+#part f
+TukeyHSD(model2T, "temperature")
+#looking at the Tukey's model for temperature, it shows that we cannot say any differences between the 3 means occurred, which lines up with the hypothesis test
+TukeyHSD(model2P,"pressure")
+#looking at the Tukey's model for pressure, we can say that 215 have the highest mean yield, while we cannot say that 230 and 200 are different
+
+
+#part g
+TukeyHSD(model2I,"pressure:temperature")
+#looking through this Tukey's model, we cannot say that one is truly better than all of the other options. However, based on the data, i would say that
+#The pressure of 215 and the temperature of 170  would produce the maximum yield, as it beats all but one option (that being 215:160)
+
+#Since 215 was the better option in terms of pressure itself, it would have made sense that it would be the factor to have the maximum yield. Based on part c, 
+#however, we cannot say that it depends on each, which is evident in the code itself
+  
+  
+  
+  
+```

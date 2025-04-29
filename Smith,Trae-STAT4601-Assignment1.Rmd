@@ -1,0 +1,126 @@
+---
+title: "STAT4601 Assignment1"
+author: "Trae Smith-101211905"
+date: "2025-01-18"
+output:
+  word_document: default
+  pdf_document: 
+    fig_width: 9
+    fig_height: 9
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#install.packages("ggplot2")
+library("ggplot2")
+library(gridExtra)
+
+fpath<-file.path("C:","Users","tdthe","Downloads","My R files","STAT4601","Assignment 1","Assignment #1 Visualization and Association Rule Mining Winter 2025 attached files Jan 16, 2025 810 PM", .Platform$file.sep)
+(excel_file<-paste(fpath,"HRDataset_v14.csv",sep=""))
+file<-read.csv(excel_file)
+#question 1a
+
+(q1a<-ggplot(file,aes(x= ManagerName, fill=PerformanceScore)))+
+    geom_bar()+theme(axis.text.x = element_text(angle = 90))
+
+(q1aresult<-chisq.test(file$ManagerName,file$PerformanceScore))
+```
+For question 1a, the bar graph resembling the Performance Score for each worker, and their manager. As we can see, there isn't an apparent relation to the performance score and their manager. While some managers have only have a "Fully Meets", they do not have a lot of workers, so they don't have enough workers to see if they have any relation. 
+
+Using the Chi Square Test for Hypothesis Testing, for alpha being 0.05 (or 0.1), we cannot say that there is any relation between Managers and Performance Score. 
+
+```{r}
+#question 1b
+(q1b<-ggplot(file, aes(x=RaceDesc)))+
+  geom_bar()+theme(axis.text.x = element_text(angle = 90))
+(table(file$RaceDesc)/length(file$RaceDesc)*100)
+
+```
+The Overall Diversity profile of the company is as follows:
+60.129% of the workers are White
+25.723% are Black or African American
+9.325% are Asian
+3.537% are of 2 or more races
+0.965% are American Indian or Alaska Native
+and 0.322% are Hispanic
+
+```{r}
+#question 1c
+(q1c<-ggplot(file, aes(x=RecruitmentSource, fill=RaceDesc)))+
+    geom_bar(position="dodge")+theme(axis.text.x = element_text(angle = 90))
+```
+Looking at the different job sources, we can see that Indeed has the most unique race, so for the most diverse, Indeed would be the best option. The job sources "Diversity Job Fair", "Online Web Application", and "Other" each only have one race. As such, they are the least diverse job sources. 
+
+```{r}
+#question 1d
+terminated<-c()
+for (i in 1:dim(file)){
+  terminated[i]<-ifelse(file$Termd[i]==1, "yes", "no")
+}
+
+q1d<-ggplot(file, aes(x=PerformanceScore, fill=terminated))+
+  geom_bar(position="dodge")+theme(axis.text.x = element_text(angle = 90))
+
+q1d2<-ggplot(file, aes(x=Absences, fill=terminated))+
+  geom_bar(position="dodge")+theme(axis.text.x=element_text(angle=90))
+
+grid.arrange(q1d,q1d2 , nrow = 2)
+
+(q1dresult<-chisq.test(terminated,file$PerformanceScore))
+(q1d2result<-chisq.test(terminated,file$Absences))
+```
+Looking at Performance Score along with if they're terminated or not, we can see that all of them except for the section "Needs Improvement" have a lower termination. Only those that is part of "Needs Improvement" have more termination than non-terminations. 
+
+Using a Chi-squared test, we can say that we are about 90% certain that there is a difference in the ratio between them, in which the "Needs Improvement" would likely be the one that is different.
+```{r}
+#Question 1e
+f1<-ggplot(file, aes(x=Salary,y=EmpID, colour=Position)) +geom_point()+theme(axis.text.x = element_text(angle = 90))
+f2<-ggplot(file, aes(x=Salary,y=EmpID,  colour=Sex)) +geom_point() +theme(axis.text.x = element_text(angle = 90))
+f3<-ggplot(file, aes(x=Salary,y=EmpID, colour=RaceDesc))+ geom_point() + theme(axis.text.x = element_text(angle = 90))
+f4<-ggplot(file, aes(x=Salary,y=EmpID, colour=PerformanceScore))+geom_point() +theme(axis.text.x = element_text(angle = 90))
+grid.arrange(f1, f2, f3, f4, nrow = 2)
+
+(q1e1result<-chisq.test(file$Sex,file$Salary))
+(q1e2result<-chisq.test(file$PerformanceScore,file$Salary))
+(q1e3result<-chisq.test(file$RaceDesc,file$Salary))
+(q1e4result<-chisq.test(file$Position,file$Salary))
+
+```
+For Sex and Performance Score, there are not pay that are not deemed inequitable.
+
+While for both Race and Position seem like there is an inequitable pay, there isn't any using the Chi square test. For position specifically, the only inequitable pay would be the president, in which there is one and we cannot say that it is not an outlier in this scatter plot. 
+
+```{r}
+#Question 2
+
+#install.packages("arules")
+library(arules)
+(csv_file<-paste(fpath,"bread_basket.csv",sep=""))
+bread_data<-read.csv(csv_file)
+uni_transaction<-unique(bread_data$Transaction_Number)
+uni_items<-unique(bread_data$Item)
+counts<-matrix(0, length(uni_transaction), length(uni_items), dimnames=list(uni_transaction, uni_items))
+for (i in 1:dim(bread_data)) {
+  transact <- bread_data$Transaction_Number[i]
+  item <- bread_data$Item[i]
+  counts[as.character(transact), item] <- counts[as.character(transact), item] + 1
+}
+rules <- apriori(apply(counts, 2, as.numeric), parameter = list(supp = 0.04, conf = 0.01, target = "rules"))
+
+View(inspect(rules))
+
+  
+
+
+```
+Looking at this and setting support as 0.04, we can tell that Bread, Coffee and Tea, Coffee (going both ways) don't do as well, while (Pastry, Coffee) and (Cake, Coffee) are improving. Therefore, I would like to do the following:
+
+Make the pastry section and cake section have a combo to the coffee (so buy a pastry or cake, get a coffee for 15% off), as many people would like that combo along with their preferences to this combo. 
+
+Move the Tea section a little further away from the coffee section, to discourage customers from purchasing them even further, while moving the pastry and cake sections closer to the coffee (if the entire bakery section is considered, rearrange it so the bread is furthest away from the coffee and the pastry and cake are closer to it)
+
+
+If you instead want customers to walk further, in which they might want to grab a snack (which is not proven in this statistic yet), move the tea closer and the cake and pastry further away. I would recommend to keep the deal to incentivize customers to purchase these products. 
